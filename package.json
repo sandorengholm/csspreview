@@ -1,9 +1,15 @@
 {
 	"name": "csspreview",
-	"displayName": "csspreview",
+	"displayName": "CSS Preview",
 	"description": "CSS Preview is a tool for previewing selected CSS selectors in a separate column inside the vscode editor. The purpose of the tool is to give you a visual idea of your styling without leaving your editor.",
 	"version": "1.0.0",
+	"icon": "images/icon.png",
 	"publisher": "sandorengholm",
+	"author": "sandorengholm",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sandorengholm/csspreview"
+	},
 	"engines": {
 		"vscode": "^1.23.0"
 	},

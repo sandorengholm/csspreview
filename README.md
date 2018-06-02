@@ -4,7 +4,7 @@
 
 CSS Preview enables you to see a visual representation of your styled selectors without leaving your editor.
 
-\!\[csspreview\]\(images/csspreview.gif\)
+![CSS Preview](https://github.com/sandorengholm/csspreview/blob/master/images/csspreview.gif?raw=true)
 
 ## Release Notes
 

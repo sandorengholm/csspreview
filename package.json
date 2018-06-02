@@ -1,0 +1,42 @@
+{
+	"name": "csspreview",
+	"displayName": "csspreview",
+	"description": "CSS Preview is a tool for previewing selected CSS selectors in a separate column inside the vscode editor. The purpose of the tool is to give you a visual idea of your styling without leaving your editor.",
+	"version": "1.0.0",
+	"publisher": "sandorengholm",
+	"engines": {
+		"vscode": "^1.23.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.cssPreview"
+	],
+	"contributes": {
+		"commands": [{
+			"command": "extension.cssPreview",
+			"title": "CSS Preview"
+		}],
+		"menus": {
+			"editor/title": [{
+				"command": "extension.cssPreview",
+				"when": "resourceLangId == css"
+			}]
+		}
+	},
+	"main": "./out/extension",
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^2.6.1",
+		"vscode": "^1.1.6",
+		"@types/node": "^7.0.43",
+		"@types/mocha": "^2.2.42"
+	}
+}

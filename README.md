@@ -1,3 +1,7 @@
+<div style="text-align: center;">
+    <img src="images/icon.png" alt="logo" style="width: 200px;"/>
+</div>
+
 # CSS Preview
 
 ## Description

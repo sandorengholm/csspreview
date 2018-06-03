@@ -42,7 +42,5 @@ CSS Preview enables you to see a visual representation of your styled selectors 
 ### 1.0.1
 * Updated README.md with better description of the extension.
 
-## Social
-Follow me on Twitter:
-
+## Follow me on Twitter:
 [@sandorengholm](https://twitter.com/sandorengholm)

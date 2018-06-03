@@ -1,8 +1,11 @@
-<div style="text-align: center;">
-    <img src="images/icon.png" alt="logo" style="width: 200px;"/>
-</div>
-
-# CSS Preview
+<h1 align="center">
+  <br>
+    <img src="https://github.com/sandorengholm/csspreview/blob/master/images/icon.png?raw=true" alt="logo" width="200">
+  <br>
+  CSS Preview
+  <br>
+  <br>
+</h1>
 
 ## Description
 CSS Preview enables you to see a visual representation of your styled selectors without leaving your editor.

@@ -71,7 +71,8 @@ export function activate(context: vscode.ExtensionContext) {
 
             let text = (properties as any)["--text"];
 
-            return `<style>
+            return `
+                <style>
                     * {
                         margin: 0;
                         padding: 0;
@@ -174,7 +175,7 @@ export function activate(context: vscode.ExtensionContext) {
                     <div class="guideline right"></div>
                     <div class="guideline top">
                         <h1>${stylename}</h1>
-					    <h2 class="previewtext">Highlight <a href="${encodeURI('command:extension.revealCssRule?' + JSON.stringify([document.uri, propStart, propEnd]))}">CSS selector</a></h2>
+					    <!--<h2 class="previewtext">Highlight <a href="${encodeURI('command:extension.revealCssRule?' + JSON.stringify([document.uri, propStart, propEnd]))}">CSS selector</a></h2>-->
                     </div>
                     <div class="container">
                         <div class="selected-element"></div>
@@ -182,7 +183,8 @@ export function activate(context: vscode.ExtensionContext) {
                     <script>
                         document.querySelector(".selected-element").innerHTML = ${text ? text : ''};
                     </script>
-                </body>`;
+                </body>
+            `;
         }
     }
 
@@ -199,19 +201,20 @@ export function activate(context: vscode.ExtensionContext) {
         if (e.textEditor === vscode.window.activeTextEditor) {
             provider.update(previewUri);
         }
-    })
+    });
 
-    let disposable = vscode.commands.registerCommand('extension.cssPreview', () => {
-        return vscode.commands.executeCommand('vscode.previewHtml', previewUri, vscode.ViewColumn.Two, 'CSS Preview').then((success) => {
-        }, (reason) => {
-            vscode.window.showErrorMessage(reason);
+    let disposable = vscode.commands.registerCommand('csspreview.launch', () => {
+        let panel = vscode.window.createWebviewPanel('CSS Preview', 'CSS Preview', vscode.ViewColumn.Two, {});
+        panel.webview.html = provider.provideTextDocumentContent(previewUri);
+
+        vscode.window.onDidChangeTextEditorSelection(() => {
+            panel.webview.html = provider.provideTextDocumentContent(previewUri);
         });
     });
 
     let highlight = vscode.window.createTextEditorDecorationType({ backgroundColor: 'rgba(200,200,200,.35)' });
 
     vscode.commands.registerCommand('extension.revealCssRule', (uri: vscode.Uri, propStart: number, propEnd: number) => {
-
         for (let editor of vscode.window.visibleTextEditors) {
             if (editor.document.uri.toString() === uri.toString()) {
                 let start = editor.document.positionAt(propStart);

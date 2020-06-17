@@ -42,7 +42,7 @@ CSS Preview enables you to see a visual representation of your styled selectors 
 ### 1.0.1
 * Updated README.md with better description of the extension.
 
-### 1.0.2
+### 1.0.3
 * Upgraded extension to work with vscode 1.46.0
 
 ## Follow me on Twitter:

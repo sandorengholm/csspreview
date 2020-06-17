@@ -21,29 +21,33 @@ export function activate(context: vscode.ExtensionContext) {
 
         private createCssSnippet() {
             let editor = vscode.window.activeTextEditor;
-            if (!(editor.document.languageId === 'css')) {
-                return this.errorSnippet("Active editor doesn't show a CSS document - no properties to preview.")
+            if (editor?.document.languageId !== 'css') {
+                return this.errorSnippet("Active editor doesn't show a CSS document - no properties to preview.");
             }
             return this.extractSnippet();
         }
 
         private extractSnippet(): string {
             const editor = vscode.window.activeTextEditor;
-            const text = editor.document.getText();
-            const selStart = editor.document.offsetAt(editor.selection.anchor);
-            const propStart = text.lastIndexOf('{', selStart);
-            const propEnd = text.indexOf('}', selStart - 1);
-            const stylenameStart = text.lastIndexOf('}', selStart - 2);
-            const stylenameEnd = text.indexOf('{', stylenameStart);
+            if (editor) {
+                const text = editor.document.getText();
+                const selStart = editor.document.offsetAt(editor.selection.anchor);
+                const propStart = text.lastIndexOf('{', selStart);
+                const propEnd = text.indexOf('}', selStart - 1);
+                const stylenameStart = text.lastIndexOf('}', selStart - 2);
+                const stylenameEnd = text.indexOf('{', stylenameStart);
 
-            const stylename = text.slice(stylenameStart + 1, stylenameEnd).trim();
+                const stylename = text.slice(stylenameStart + 1, stylenameEnd).trim();
 
-            if (stylename.length === 0) {
-                return this.errorSnippet("Cannot determine the rule's properties.");
+                if (stylename.length === 0) {
+                    return this.errorSnippet("Cannot determine the rule's properties.");
+                } else {
+                    const cssStyles = text.slice(stylenameEnd + 1, text.indexOf('}', stylenameEnd + 1));
+
+                    return this.snippet(cssStyles, stylename, editor.document, stylenameStart + 1, propEnd);
+                }
             } else {
-                const cssStyles = text.slice(stylenameEnd + 1, text.indexOf('}', stylenameEnd + 1));
-
-                return this.snippet(cssStyles, stylename, editor.document, stylenameStart + 1, propEnd);
+                return this.errorSnippet('There is no active editor');
             }
         }
 
@@ -51,17 +55,21 @@ export function activate(context: vscode.ExtensionContext) {
             return `
 				<body>
 					${error}
-				</body>`;
+                </body>
+            `;
         }
 
         private snippet(cssStyles: string, stylename: string, document: vscode.TextDocument, propStart: number, propEnd: number): string {
 
 
             let regex = /([\w-]*)\s*:\s*([^;]*)/g;
-            let match, properties = {};
-            while (match = regex.exec(cssStyles)) properties[match[1]] = match[2].trim();
+            let match;
+            let properties = {};
+            while (match = regex.exec(cssStyles)) {
+                (properties as any)[match[1]] = match[2].trim();
+            }
 
-            let text = properties["--text"];
+            let text = (properties as any)["--text"];
 
             return `<style>
                     * {
@@ -129,7 +137,7 @@ export function activate(context: vscode.ExtensionContext) {
                         ${cssStyles}
                     }
                     .selected-element:before {
-                        content: '${properties["height"]}';
+                        content: '${(properties as any)["height"]}';
 
                         position: absolute;
                         right: 0;
@@ -146,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
                         line-height: 2;
                     }
                     .selected-element:after {
-                        content: '${properties["width"]}';
+                        content: '${(properties as any)["width"]}';
 
                         position: absolute;
                         bottom: 0;
@@ -182,7 +190,7 @@ export function activate(context: vscode.ExtensionContext) {
     let provider = new TextDocumentContentProvider();
     let registration = vscode.workspace.registerTextDocumentContentProvider('css-preview', provider);
     vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-        if (e.document === vscode.window.activeTextEditor.document) {
+        if (e.document === vscode.window.activeTextEditor?.document) {
             provider.update(previewUri);
         }
     });

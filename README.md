@@ -15,7 +15,7 @@ CSS Preview enables you to see a visual representation of your styled selectors 
 
 ## How to use?
 * Open a .css file
-* Press CMD+Shift+P (macOS) or Ctrl+Shift+P (Windows)
+* Press CMD+Shift+P (MacOS) or Ctrl+Shift+P (Windows)
 * Run the CSS Preview command (this opens a preview window)
 * Enjoy writing selectors with live preview! <3
 
@@ -23,7 +23,9 @@ CSS Preview enables you to see a visual representation of your styled selectors 
 ### --text property
 ```css
 .example {
-    --text: "Write markup or simple text to preview inside your element";
+    --content:
+      <h1>This is a title</h1>
+      <div class="circle">I\'m a circle</div>;
 }
 ```
 
@@ -44,6 +46,9 @@ CSS Preview enables you to see a visual representation of your styled selectors 
 
 ### 1.0.3
 * Upgraded extension to work with vscode 1.46.0
+
+### 1.0.4
+* Replaced the --text with a --content property where you can insert html markup to stylize a more complex element
 
 ## Follow me on Twitter:
 [@sandorengholm](https://twitter.com/sandorengholm)

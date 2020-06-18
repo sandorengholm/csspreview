@@ -61,15 +61,17 @@ export function activate(context: vscode.ExtensionContext) {
 
         private snippet(cssStyles: string, stylename: string, document: vscode.TextDocument, propStart: number, propEnd: number): string {
 
-
             let regex = /([\w-]*)\s*:\s*([^;]*)/g;
             let match;
             let properties = {};
+
             while (match = regex.exec(cssStyles)) {
                 (properties as any)[match[1]] = match[2].trim();
             }
 
-            let text = (properties as any)["--text"];
+            let content = (properties as any)["--content"];
+
+            const textEditorContent = vscode.window.activeTextEditor?.document.getText();
 
             return `
                 <style>
@@ -79,109 +81,99 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                     body {
                         position: relative;
-
                         width: 100%;
-                        padding: 0 20px;
-                        margin: 0;
+                        height: 100vh;
+                        padding: 30px;
                         box-sizing: border-box;
                         overflow-x: hidden;
                         overflow-y: scroll;
-
                         font-family: verdana;
-                        background-color: white;
+                        background-color: #3b4b58;
                     }
-                    .guideline {
-                        position: absolute;
-                        top: 0;
-                        z-index: 1;
-
-                        width: 20px;
-                        height: calc(100% + 16px);
-                        min-height: 100vh;
-
-                        background-color: rgba(255, 230, 191, 0.8);
-                    }
-                    .guideline.left {
-                        left: 0;
-                    }
-                    .guideline.right {
-                        right: 0;
-                    }
-                    .guideline.top {
-                        position: relative;
-
-                        width: 100%;
-                        height: auto;
-                        min-height: auto;
-                        padding: 10px 0;
-                    }
-                    h1 {
+                    .csspreview-h1 {
                         margin-bottom: 10px;
-                        color: #555;
+                        color: #f1f1f1;
                         font-size: 16px;
                         font-weight: 100;
                     }
-                    h2 {
-                        color: #444;
+                    .csspreview-h2 {
+                        color: #f1f1f1;
                         font-size: 10px;
                         font-weight: bold;
                     }
-                    .container {
-                        position: relative;
-                        z-index: 0;
+                    .csspreview-button {
+                        border: 1px solid black;
+                        background-color: white;
+                        padding: 5px;
+                        cursor: pointer;
                     }
-                    .selected-element {
+                    .csspreview-button:focus {
+                        outline: none;
+                    }
+                    .csspreview-inner-container {
+                        position: absolute;
+                        top: 100px;
+                        right: 30px;
+                        bottom: 30px;
+                        left: 30px;
+                        background-color: white;
+                    }
+                    .csspreview-preview-element--specs {
+                        border: 1px dashed #777;
+                    }
+                    .csspreview-preview-element {
                         position: relative;
                         box-sizing: border-box;
-                        border: 1px dashed #777;
                         color: black;
                         ${cssStyles}
                     }
-                    .selected-element:before {
-                        content: '${(properties as any)["height"]}';
-
+                    .csspreview-preview-element--specs:before,
+                    .csspreview-preview-element--specs:after {
                         position: absolute;
+                        z-index: 2; 
+                        font-size: 10px;
+                        color: #777;
+                        letter-spacing: 1px;
+                        margin: 0;
+                        padding: 3px;
+                        line-height: 1.5;
+                        background-color: white;
+                    }
+                    .csspreview-preview-element--specs:before {
+                        content: '${(properties as any)["height"] ? (properties as any)["height"] : ''}';
                         right: 0;
                         top: 50%;
-                        z-index: 2;
                         transform: translate(calc(100% + 5px), -50%);
-
                         width: 15px;
-
                         writing-mode: vertical-rl;
                         text-orientation: sideways;
-                        font-size: 10px;
-                        color: #777;
-                        line-height: 2;
                     }
-                    .selected-element:after {
-                        content: '${(properties as any)["width"]}';
-
-                        position: absolute;
+                    .csspreview-preview-element--specs:after {
+                        content: '${(properties as any)["width"] ? (properties as any)["width"] : ''}';
                         bottom: 0;
-                        left: 50%;
-                        z-index: 2;                        
+                        left: 50%;               
                         transform: translate(-50%, calc(100% + 5px));
-
                         height: 15px;
-
-                        font-size: 10px;
-                        color: #777;
-                        line-height: 1;                        
                     }
+
+                    ${textEditorContent}
                 </style>
                 <body>
-                    <div class="guideline left"></div>
-                    <div class="guideline right"></div>
-                    <div class="guideline top">
-                        <h1>${stylename}</h1>
-					    <!--<h2 class="previewtext">Highlight <a href="${encodeURI('command:extension.revealCssRule?' + JSON.stringify([document.uri, propStart, propEnd]))}">CSS selector</a></h2>-->
+                    <div class="csspreview-h1">${stylename}</div>
+                    <button class="csspreview-button" onclick="toggleSpecs()">Toggle Specs</button>
+                    <!--<h2 class="previewtext">Highlight <a href="${encodeURI('command:extension.revealCssRule?' + JSON.stringify([document.uri, propStart, propEnd]))}">CSS selector</a></h2>-->
+
+                    <div class="csspreview-inner-container">
+                        <div id="csspreview-preview-element" class="csspreview-preview-element csspreview-preview-element--specs">${content ? content : ''}</div>
                     </div>
-                    <div class="container">
-                        <div class="selected-element"></div>
-                    </div>
+                    
                     <script>
-                        document.querySelector(".selected-element").innerHTML = ${text ? text : ''};
+                        function toggleSpecs() {
+                            var elm = document.getElementById('csspreview-preview-element');
+                            if (elm) {
+                                elm.classList.toggle('csspreview-preview-element--specs');
+                            }
+                        }
                     </script>
                 </body>
             `;
@@ -204,7 +196,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     let disposable = vscode.commands.registerCommand('csspreview.launch', () => {
-        let panel = vscode.window.createWebviewPanel('CSS Preview', 'CSS Preview', vscode.ViewColumn.Two, {});
+        let panel = vscode.window.createWebviewPanel('CSS Preview', 'CSS Preview', vscode.ViewColumn.Two, { enableScripts: true });
         panel.webview.html = provider.provideTextDocumentContent(previewUri);
 
         vscode.window.onDidChangeTextEditorSelection(() => {
